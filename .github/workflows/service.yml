@@ -16,14 +16,15 @@ jobs:
         run: |
           docker network create search-test
           docker run -d --name search-cache --network search-test redis:8-alpine redis-server --requirepass search-test-password
-          docker run -d --name search --network search-test -p 8080:8080 -e SEARXNG_SECRET=search-test-secret-not-production -e SEARXNG_BASE_URL=http://localhost:8080/ -e SEARXNG_VALKEY_URL=redis://:search-test-password@search-cache:6379/0 altstack-search
-          for attempt in $(seq 1 60); do curl -fsS http://localhost:8080/ -o /tmp/search.html && break; sleep 2; done
+          docker run -d --name search --network search-test -p 8080:8080 -e SEARXNG_SECRET=search-test-secret-not-production -e SEARXNG_BASE_URL=http://localhost:8080/search/ -e SEARXNG_VALKEY_URL=redis://:search-test-password@search-cache:6379/0 altstack-search
+          for attempt in $(seq 1 60); do curl -fsS http://localhost:8080/search/healthz -o /tmp/health.txt && break; sleep 2; done
+          curl -fsS -H 'X-Real-IP: 198.51.100.20' -H 'User-Agent: Mozilla/5.0 Firefox/158.0' -H 'Accept: text/html' http://localhost:8080/search/ -o /tmp/search.html
           grep -q 'AltStack Search' /tmp/search.html
-          curl -fsS http://localhost:8080/static/themes/simple/altstack.css -o /tmp/theme.css
+          curl -fsS http://localhost:8080/search/static/themes/simple/altstack.css -o /tmp/theme.css
           test -s /tmp/theme.css
-          curl -fsS http://localhost:8080/preferences -o /tmp/preferences.html
+          curl -fsS -H 'X-Real-IP: 198.51.100.20' -H 'User-Agent: Mozilla/5.0 Firefox/158.0' -H 'Accept: text/html' http://localhost:8080/search/preferences -o /tmp/preferences.html
           grep -q 'AltStack Search' /tmp/preferences.html
-          curl -fsS 'http://localhost:8080/search?q=AltStack&categories=general' -o /tmp/results.html
+          curl -fsS -H 'X-Real-IP: 198.51.100.20' -H 'User-Agent: Mozilla/5.0 Firefox/158.0' -H 'Accept: text/html' 'http://localhost:8080/search/search?q=AltStack&categories=general' -o /tmp/results.html
           grep -q 'AltStack Search' /tmp/results.html
       - name: Container diagnostics
         if: always()
