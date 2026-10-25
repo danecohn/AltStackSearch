@@ -22,7 +22,8 @@ p.write_text(text)
 
 # Modified sources/static assets must not retain upstream precompressed variants.
 import base64,re
-logo=base64.b64decode(re.search(r'data:image/png;base64,([^"]+)',(assets/'logo.svg').read_text()).group(1))
+logo=(assets/'logo.png').read_bytes()
+if not logo.startswith(b'\x89PNG\r\n\x1a\n'):raise RuntimeError('Artemis favicon is not a valid PNG export')
 for name in ['favicon.png','searxng.png']: (root/'static/themes/simple/img'/name).write_bytes(logo)
 for template in (root/'templates/simple').rglob('*.html'):
  text=template.read_text()
