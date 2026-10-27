@@ -5,6 +5,6 @@ COPY assets/logo.svg /opt/altstack-search/logo.svg
 RUN /usr/local/searxng/.venv/bin/python /opt/altstack-search/brand.py && /usr/local/searxng/.venv/bin/python -m compileall -q -f /usr/local/searxng/searx && mkdir -p /etc/searxng /var/cache/searxng && chown -R 977:977 /etc/searxng /var/cache/searxng /opt/altstack-search
 USER 977:977
 ENV SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml SEARXNG_PORT=8080
-LABEL org.opencontainers.image.title="AltStack Search" org.opencontainers.image.licenses="AGPL-3.0-or-later" org.opencontainers.image.source="https://github.com/danecohn/AltStackSearch"
+LABEL org.opencontainers.image.title="Vigil Search" org.opencontainers.image.licenses="AGPL-3.0-or-later" org.opencontainers.image.source="https://github.com/danecohn/AltStackSearch"
 EXPOSE 8080
 ENTRYPOINT ["/bin/sh","/opt/altstack-search/start.sh"]
